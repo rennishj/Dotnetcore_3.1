@@ -3,6 +3,7 @@ using DataAccess.ConnectionFactory;
 using Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,11 +19,20 @@ namespace DataAccess.Repository
             _connectionProvider = connectionProvider;
         }
         public async Task<int> AddAsync(Movie entity)
-        {
+        {                    
             using (var conn = _connectionProvider.CreateConnection())
-            {                         
-                var result = await conn.ExecuteAsync("dbo.CreateMovie", entity);
-                return result;
+            {
+                var movieId = -1;
+                var param = new DynamicParameters();
+                param.Add("@Title", entity.Title);
+                param.Add("@Description", entity.Description);
+                param.Add("@ReleaseDate", entity.ReleaseDate);
+                param.Add("@Genre", entity.Genre);
+                param.Add("@Director", entity.Director);
+                param.Add("@Id", 0, DbType.Int32, ParameterDirection.Output);
+                await conn.ExecuteAsync("dbo.CreateMovie",  param, commandType: CommandType.StoredProcedure);
+                movieId = param.Get<int>("@Id");
+                return movieId;
             }
         }
 
@@ -34,7 +44,7 @@ namespace DataAccess.Repository
         public async Task<IReadOnlyList<Movie>> GetAllAsync()
         {
             using (var conn =  _connectionProvider.CreateConnection())
-            {                
+            {   
                 var result = await conn.QueryAsync<Movie>("dbo.GetAllMovies");
                 return result.ToList();
             }
@@ -44,7 +54,11 @@ namespace DataAccess.Repository
         {
             using (var conn = _connectionProvider.CreateConnection())
             {
-                var result = await conn.QueryAsync<Movie>("dbo.GetMovieById");
+                var param = new 
+                {
+                    MovieId = id
+                };                
+                var result = await conn.QueryAsync<Movie>("dbo.GetMovieById", param, commandType: CommandType.StoredProcedure);
                 return result.FirstOrDefault();
             }
         }

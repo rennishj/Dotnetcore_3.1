@@ -33,14 +33,18 @@ namespace Api.Controllers
             var movieEntity = _mapper.Map<Movie>(movieForCreation);
             var movieId = await _movieRepo.AddAsync(movieEntity);
             movieEntity.Id = movieId;
-            return CreatedAtRoute("GetMovie", new { movieId = movieId}, _mapper.Map<Movie>(movieEntity)
-                );
+            return CreatedAtRoute("movie", new { movieId = movieId}, _mapper.Map<Movie>(movieEntity));
         }
 
         [HttpGet]
         [Route("getallmovies")]
         public async Task<IActionResult> GetAllMovies() =>
             Ok(await _movieRepo.GetAllAsync());
+
+        [HttpGet]
+        [Route("movie")]
+        public async Task<IActionResult> GetMovie([FromQuery] int movieId) =>
+            Ok(await _movieRepo.GetByIdAsync(movieId));
 
     }
 }

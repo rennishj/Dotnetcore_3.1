@@ -56,6 +56,7 @@ begin
 
 	select @Id = SCOPE_IDENTITY()
 end
+go
 
 if object_id('dbo.GetAllMovies', 'p') is not null
 begin
@@ -76,6 +77,7 @@ begin
 	from
 		dbo.Movie
 end
+go
 
 if object_id('dbo.GetMovieById', 'p') is not null
 begin
