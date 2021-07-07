@@ -2,9 +2,11 @@ using DataAccess.ConnectionFactory;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 using System;
 
 namespace Api
@@ -21,7 +23,18 @@ namespace Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.ReturnHttpNotAcceptable = true;
+
+                //Add xml formatters
+                options.OutputFormatters.Insert(0, new XmlSerializerOutputFormatter());
+                options.InputFormatters.Insert(0, new XmlSerializerInputFormatter(options));
+            }).AddNewtonsoftJson(setupAction =>
+            {
+                setupAction.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
+
             services.AddTransient<IDatabaseConnectionProvider>(c =>
             {
                 return new SqlConnectionProvider(Configuration.GetConnectionString("MovieDatabase"));
