@@ -105,3 +105,33 @@ begin
 	where
 		m.Id  =@MovieId
 end
+
+if object_id('dbo.UpdateMovieById', 'p') is not null
+begin
+	drop procedure dbo.UpdateMovieById
+end
+go
+create procedure dbo.UpdateMovieById
+(
+  @MovieId int,
+  @Title varchar(500),
+  @Description varchar(500),
+  @Genre varchar(10),
+  @ReleaseDate datetime,
+  @Director varchar(100)
+)
+as
+begin
+    set nocount on;
+	set transaction isolation level read uncommitted;
+	Update
+		dbo.Movie
+	set
+		Title = @Title,
+		Description = @Description,
+		Genre = @Genre,
+		Director = @Director,
+		ReleaseDate = @ReleaseDate
+	where
+		Id = @MovieId
+end

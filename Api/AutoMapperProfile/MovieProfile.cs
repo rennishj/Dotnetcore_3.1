@@ -1,6 +1,5 @@
 ﻿using Api.Dto;
 using AutoMapper;
-using Model;
 
 namespace Api.AutoMapperProfile
 {
@@ -8,8 +7,11 @@ namespace Api.AutoMapperProfile
     {
         public MovieProfile()
         {
-            CreateMap<MovieForCreation, Movie>()
+            CreateMap<MovieForCreation, Entity.Movie>()
                 .ForMember(movieModel => movieModel.CreatedOn, movieDto => movieDto.NullSubstitute(null));
+
+            CreateMap<MovieForUpdate, Entity.Movie>();
+            CreateMap<Entity.Movie, MovieForUpdate>();
         }
     }
 }

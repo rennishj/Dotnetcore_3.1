@@ -31,7 +31,9 @@ namespace DataAccess.ConnectionFactory
                     _connection = new SqlConnection(_connectionString);
                      _connection.Open();                    
                 }
-                
+                else if( _connection != null && _connection.State == ConnectionState.Closed)
+                    _connection.Open();
+
                 return _connection;
             }           
             

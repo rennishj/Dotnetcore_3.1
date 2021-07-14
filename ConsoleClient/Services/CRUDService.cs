@@ -1,4 +1,5 @@
-﻿using Model;
+﻿using Entity;
+using Movies.Client.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -24,7 +25,12 @@ namespace ConsoleClient.Services
         public async Task Run()
         {
             //await GetResource();
-            await GetResourceThroughHttpRequestMessage();
+            // await GetResourceThroughHttpRequestMessage();
+
+            //await CreateResource();
+
+            await UpdateResource();
+            //await Task.CompletedTask;
         }
 
         public async Task GetResource()
@@ -68,6 +74,60 @@ namespace ConsoleClient.Services
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
+        }
+
+        public async Task CreateResource()
+        {
+            //CTRL + SHIFT + Space then up or down arrow to see method overlosa
+            var movie = new MovieForCreation
+            {
+                Title = "Inglorious Bastards",
+                Description = "The Quentin Tarrentino movie",
+                Director = "Quentin Tarrentino",
+                ReleaseDate = new System.DateTimeOffset(new System.DateTime(2010, 09, 03)),
+                Genre = "Thriller"
+            };
+
+            var movieJson = JsonSerializer.Serialize(movie);
+            var request = new HttpRequestMessage(HttpMethod.Post, "api/movies/create");
+            request.Content = new StringContent(movieJson);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");            
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var createdMovie = JsonSerializer.Deserialize<Movie>(content, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+        }
+
+        public async Task UpdateResource()
+        {
+            var movie = new MovieForUpdate
+            {
+                Id = 5,
+                Title = "The Departed",
+                Description = "Departed Movie",
+                Director = "Martin Scorsesee",
+                ReleaseDate = new System.DateTimeOffset(new System.DateTime(2006, 09, 03)),
+                Genre = "Crime"
+            };
+
+            var movieJson = JsonSerializer.Serialize(movie);
+            var request = new HttpRequestMessage(HttpMethod.Put, "api/movies/5");
+            request.Content = new StringContent(movieJson);
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var updatedMovie = JsonSerializer.Deserialize<Movie>(content, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
         }
     }
 }

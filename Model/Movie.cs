@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Model
+namespace Entity
 {
     public class Movie
     {

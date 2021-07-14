@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using DataAccess.ConnectionFactory;
-using Model;
+using Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -63,9 +63,31 @@ namespace DataAccess.Repository
             }
         }
 
-        public Task<int> UpdateAsync(Movie entity)
+        public async Task<int> UpdateAsync(Movie movie)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var conn = _connectionProvider.CreateConnection())
+                {
+                    var param = new
+                    {
+                        MovieId = movie.Id,
+                        Title = movie.Title,
+                        Description = movie.Description,
+                        Genre = movie.Genre,
+                        ReleaseDate = movie.ReleaseDate,
+                        Director = movie.Director
+                    };
+                    await conn.ExecuteAsync("dbo.UpdateMovieById", param, commandType: CommandType.StoredProcedure);
+                    return 1;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            
         }
     }
 }

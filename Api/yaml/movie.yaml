@@ -5,13 +5,33 @@
     "version": "1.0"
   },
   "paths": {
-    "/api/movies": {
+    "/api/movies/create": {
       "post": {
         "tags": [
           "Movies"
         ],
         "requestBody": {
           "content": {
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForCreation"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForCreation"
+              }
+            },
+            "application/*+xml": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForCreation"
+              }
+            },
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForCreation"
+              }
+            },
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/MovieForCreation"
@@ -47,11 +67,134 @@
           }
         }
       }
+    },
+    "/api/movies/{movieId}": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "operationId": "GetMovie",
+        "parameters": [
+          {
+            "name": "movieId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "movieId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "name": "movieId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForUpdate"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForUpdate"
+              }
+            },
+            "application/*+xml": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForUpdate"
+              }
+            },
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForUpdate"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForUpdate"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForUpdate"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieForUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "MovieForCreation": {
+        "required": [
+          "description",
+          "director",
+          "genre",
+          "releaseDate",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "genre": {
+            "maxLength": 10,
+            "type": "string"
+          },
+          "releaseDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "director": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MovieForUpdate": {
         "required": [
           "description",
           "director",

@@ -2,7 +2,7 @@
 using AutoMapper;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Model;
+using Entity;
 using System;
 using System.Threading.Tasks;
 
@@ -22,7 +22,7 @@ namespace Api.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpPost]
+        [HttpPost("create")]        
         public async Task<IActionResult> CreateMovie([FromBody] MovieForCreation movieForCreation)
         {
             if (movieForCreation == null)
@@ -33,7 +33,7 @@ namespace Api.Controllers
             var movieEntity = _mapper.Map<Movie>(movieForCreation);
             var movieId = await _movieRepo.AddAsync(movieEntity);
             movieEntity.Id = movieId;
-            return CreatedAtRoute("movie", new { movieId = movieId}, _mapper.Map<Movie>(movieEntity));
+            return CreatedAtRoute("GetMovie", new { movieId = movieId}, _mapper.Map<Movie>(movieEntity));
         }
 
         [HttpGet]
@@ -41,10 +41,30 @@ namespace Api.Controllers
         public async Task<IActionResult> GetAllMovies() =>
             Ok(await _movieRepo.GetAllAsync());
 
-        [HttpGet]
-        [Route("movie")]
+        [HttpGet("{movieId}", Name = "GetMovie")]        
         public async Task<IActionResult> GetMovie([FromQuery] int movieId) =>
             Ok(await _movieRepo.GetByIdAsync(movieId));
+
+        /// <summary>
+        /// https://localhost:44300/api/movies/5 --> This is how the url should be to call this api
+        /// </summary>
+        /// <param name="movieId"></param>
+        /// <param name="movieToUpdate"></param>
+        /// <returns></returns>
+        [HttpPut("{movieId}")]
+        public async Task<IActionResult> Put(int movieId, [FromBody] MovieForUpdate movieToUpdate)
+        {
+            if (movieToUpdate == null)
+                return BadRequest();
+
+            var movieEntity = await _movieRepo.GetByIdAsync(movieId);
+            if (movieEntity == null)
+                return NotFound();
+
+            await _movieRepo.UpdateAsync(_mapper.Map<MovieForUpdate, Movie>(movieToUpdate));
+
+            return Ok(_mapper.Map<MovieForUpdate>(movieEntity));
+        }
 
     }
 }
