@@ -135,3 +135,23 @@ begin
 	where
 		Id = @MovieId
 end
+go
+
+if object_id('dbo.DeleteMovieById', 'p') is not null
+begin
+	drop procedure dbo.DeleteMovieById
+end
+go
+create procedure dbo.DeleteMovieById
+(
+  @MovieId int
+)
+as
+begin
+    set nocount on;
+	set transaction isolation level read uncommitted;
+	delete	
+		dbo.Movie
+	where
+		 Id= @MovieId
+end

@@ -26,14 +26,8 @@ namespace DataAccess.ConnectionFactory
                 return _connection;
             else
             {
-                if(_connection == null)
-                {
-                    _connection = new SqlConnection(_connectionString);
-                     _connection.Open();                    
-                }
-                else if( _connection != null && _connection.State == ConnectionState.Closed)
-                    _connection.Open();
-
+                _connection = new SqlConnection(_connectionString);
+                _connection.Open();
                 return _connection;
             }           
             

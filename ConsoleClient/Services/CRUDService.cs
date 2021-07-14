@@ -29,7 +29,8 @@ namespace ConsoleClient.Services
 
             //await CreateResource();
 
-            await UpdateResource();
+            //await UpdateResource();
+            await DeleteResource();
             //await Task.CompletedTask;
         }
 
@@ -128,6 +129,14 @@ namespace ConsoleClient.Services
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
+        }
+
+        public async Task DeleteResource()
+        {            
+            var request = new HttpRequestMessage(HttpMethod.Delete, "5");            
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();            
         }
     }
 }

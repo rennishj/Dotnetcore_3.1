@@ -36,9 +36,17 @@ namespace DataAccess.Repository
             }
         }
 
-        public Task<int> DeleteAsync(int id)
+        public async Task<int> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            using (var conn = _connectionProvider.CreateConnection())
+            {
+                var param = new
+                {
+                    MovieId   = id
+                };
+                await conn.ExecuteAsync("dbo.DeleteMovieById", param, commandType: CommandType.StoredProcedure);
+                return 1;
+            }
         }
 
         public async Task<IReadOnlyList<Movie>> GetAllAsync()
@@ -65,29 +73,21 @@ namespace DataAccess.Repository
 
         public async Task<int> UpdateAsync(Movie movie)
         {
-            try
+            using (var conn = _connectionProvider.CreateConnection())
             {
-                using (var conn = _connectionProvider.CreateConnection())
+                var param = new
                 {
-                    var param = new
-                    {
-                        MovieId = movie.Id,
-                        Title = movie.Title,
-                        Description = movie.Description,
-                        Genre = movie.Genre,
-                        ReleaseDate = movie.ReleaseDate,
-                        Director = movie.Director
-                    };
-                    await conn.ExecuteAsync("dbo.UpdateMovieById", param, commandType: CommandType.StoredProcedure);
-                    return 1;
-                }
+                    MovieId = movie.Id,
+                    Title = movie.Title,
+                    Description = movie.Description,
+                    Genre = movie.Genre,
+                    ReleaseDate = movie.ReleaseDate,
+                    Director = movie.Director
+                };
+                await conn.ExecuteAsync("dbo.UpdateMovieById", param, commandType: CommandType.StoredProcedure);
+                return 1;
             }
-            catch (Exception ex)
-            {
 
-                throw;
-            }
-            
         }
     }
 }

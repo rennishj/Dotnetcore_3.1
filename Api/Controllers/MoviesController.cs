@@ -66,5 +66,20 @@ namespace Api.Controllers
             return Ok(_mapper.Map<MovieForUpdate>(movieEntity));
         }
 
+        [HttpDelete("{movieId}")]
+        public async Task<IActionResult> Delete(int movieId)
+        {
+            if (movieId <= 0)
+                return BadRequest();
+
+            var movieEntity = await _movieRepo.GetByIdAsync(movieId);
+
+            if (movieEntity == null)
+                return NotFound();
+
+            await _movieRepo.DeleteAsync(movieId);
+            return NoContent();
+        }
+
     }
 }

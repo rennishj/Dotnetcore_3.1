@@ -11,7 +11,7 @@ namespace Api.AutoMapperProfile
                 .ForMember(movieModel => movieModel.CreatedOn, movieDto => movieDto.NullSubstitute(null));
 
             CreateMap<MovieForUpdate, Entity.Movie>();
-            CreateMap<Entity.Movie, MovieForUpdate>();
+            CreateMap<MovieForUpdate, Entity.Movie>().ReverseMap();
         }
     }
 }
