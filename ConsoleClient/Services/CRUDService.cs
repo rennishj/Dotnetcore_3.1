@@ -133,7 +133,8 @@ namespace ConsoleClient.Services
 
         public async Task DeleteResource()
         {            
-            var request = new HttpRequestMessage(HttpMethod.Delete, "5");            
+            var request = new HttpRequestMessage(HttpMethod.Delete, "api/movies/5");
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();            

@@ -66,6 +66,11 @@ namespace Api.Controllers
             return Ok(_mapper.Map<MovieForUpdate>(movieEntity));
         }
 
+        /// <summary>
+        /// https://localhost:44300/api/movies/12
+        /// </summary>
+        /// <param name="movieId"></param>
+        /// <returns></returns>
         [HttpDelete("{movieId}")]
         public async Task<IActionResult> Delete(int movieId)
         {
