@@ -40,6 +40,7 @@ namespace Api
                 return new SqlConnectionProvider(Configuration.GetConnectionString("MovieDatabase"));
             });
             services.AddScoped<IMoviesRepository, MoviesRepository>();
+            services.AddScoped<IPosterRepository, PosterRepository>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSwaggerGen(sc =>
             {

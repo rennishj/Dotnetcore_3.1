@@ -30,7 +30,7 @@ namespace ConsoleClient.Services
             //await CreateResource();
 
             //await UpdateResource();
-            await DeleteResource();
+            //await DeleteResource();
             //await Task.CompletedTask;
         }
 

@@ -205,3 +205,27 @@ begin
 	select @Id = SCOPE_IDENTITY()
 end
 go
+
+if object_id('dbo.GetPosterById', 'p') is not null
+begin
+	drop procedure dbo.GetPosterById
+end
+go
+create procedure dbo.GetPosterById
+(
+  @PosterId int
+)
+as
+begin
+    set nocount on;
+	set transaction isolation level read uncommitted;
+	select
+	    p.Id,
+		p.MovieId,
+		p.Name,
+		p.Bytes
+	from
+		dbo.Poster p
+	where
+		p.Id = @PosterId
+end

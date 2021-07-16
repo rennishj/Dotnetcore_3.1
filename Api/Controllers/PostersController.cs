@@ -2,29 +2,36 @@
 using AutoMapper;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
-    [Route("api/movies/{movieId}/posters")]
+    [Route("api/movies/posters")]
     [ApiController]
     public class PostersController : ControllerBase
     {
         private readonly IPosterRepository _posterRepo;
+        private readonly IMoviesRepository _moviesRepo;
         private readonly IMapper _mapper;
 
-        public PostersController(IPosterRepository posterRepo, IMapper mapper)
+        public PostersController(IPosterRepository posterRepo, IMoviesRepository moviesRepo, IMapper mapper)
         {
             _posterRepo = posterRepo;
+            _moviesRepo = moviesRepo;
             _mapper = mapper;
         }
 
-        [HttpGet("{movieId}", Name = "GetPoster")]
+        [HttpGet("{posterId}", Name = "GetPoster")]
         public async Task<IActionResult> GetPoster(int posterId)
         {
             if (posterId <= 0 )
                 return BadRequest();
             var posterEntity = await _posterRepo.GetByIdAsync(posterId);
+            
+            if (posterEntity == null)
+                return NotFound();
+
             return Ok(_mapper.Map<Dto.Poster>(posterEntity));
         }
 
@@ -38,6 +45,12 @@ namespace Api.Controllers
             if (!ModelState.IsValid)
                 return new UnprocessableEntityObjectResult(ModelState);
 
+            var movieEntity = await _moviesRepo.GetByIdAsync(movieId);
+
+            if (movieEntity == null)
+                throw new Exception($"Movie with Id:{movieId} si not found");
+
+            GenerateRandomPosterData(poster, movieEntity);
             var posterEntity = _mapper.Map<Entity.Poster>(poster);
             posterEntity.MovieId = movieId;
 
@@ -47,6 +60,18 @@ namespace Api.Controllers
             return CreatedAtRoute("GetPoster", new { posterId = posterId, movieId = movieId },
                 _mapper.Map<Dto.Poster>(posterEntity)
                 );
+        }
+
+        private PosterForCreation GenerateRandomPosterData(PosterForCreation poster, Entity.Movie movie)
+        {
+            var random = new Random();
+
+            //500KB
+            var generatedBytes = new byte[524288];
+            random.NextBytes(generatedBytes);
+            poster.Bytes = generatedBytes;
+            poster.Name = $"{movie.Title} poster number {DateTime.UtcNow.Ticks}";
+            return poster;
         }
     }
 }

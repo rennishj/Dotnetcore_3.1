@@ -4,6 +4,7 @@ using Entity;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataAccess.Repository
@@ -42,9 +43,17 @@ namespace DataAccess.Repository
             throw new NotImplementedException();
         }
 
-        public Task<Poster> GetByIdAsync(int id)
+        public async Task<Poster> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            using (var conn = _connectionProvider.CreateConnection())
+            {
+                var param = new
+                {
+                    PosterId = id
+                };
+                var result = await conn.QueryAsync<Poster>("dbo.GetPosterById", param, commandType: CommandType.StoredProcedure);
+                return result.FirstOrDefault();
+            }
         }
 
         public Task<int> UpdateAsync(Poster entity)

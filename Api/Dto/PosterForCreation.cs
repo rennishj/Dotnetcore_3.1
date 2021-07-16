@@ -15,8 +15,7 @@ namespace Api.Dto
         [Required]
         [MaxLength(200)]
         public string Name { get; set; }
-
-        [Required]
+        
         public byte[] Bytes { get; set; }
     }
 
