@@ -19,6 +19,21 @@ else
 go
 
 
+if not exists (select  1 from information_schema.tables t where t.TABLE_SCHEMA='dbo' and t.TABLE_NAME='Poster')
+begin
+    create table dbo.Poster
+(
+   Id int not null identity(1,1)  constraint pk_poster_id primary key clustered,
+   MovieId int not null constraint  fk_poster_movie_id  foreign key references dbo.Movie(Id),
+   Name varchar(200) not null,
+   Bytes varbinary(max) not null,
+   CreatedOn datetime not null constraint df_poster_createdon default getdate()
+)
+end
+else
+  print ('table dbo.Poster already exists')
+go
+
 if object_id('dbo.CreateMovie', 'p') is not null
 begin
 	drop procedure dbo.CreateMovie
@@ -155,3 +170,38 @@ begin
 	where
 		 Id= @MovieId
 end
+
+--poster
+
+if object_id('dbo.CreatePoster', 'p') is not null
+begin
+	drop procedure dbo.CreatePoster
+end
+go
+create procedure dbo.CreatePoster
+(
+   @Id int output,
+   @MovieId int,
+   @Name varchar(200),
+   @Bytes varbinary(max)
+)
+as
+begin
+    set nocount on;
+	set transaction isolation level read uncommitted;
+	insert into dbo.Poster
+	(		 
+	  MovieId,
+	  Name,
+	  Bytes
+	)
+	values
+	(
+	   @MovieId,
+	   @Name,
+	   @Bytes
+	)
+
+	select @Id = SCOPE_IDENTITY()
+end
+go

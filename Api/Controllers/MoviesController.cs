@@ -41,6 +41,8 @@ namespace Api.Controllers
         public async Task<IActionResult> GetAllMovies() =>
             Ok(await _movieRepo.GetAllAsync());
 
+        
+        //https://localhost:44300/api/movies/getmovie?movieId=1 ( We expect this from query string)
         [HttpGet("{movieId}", Name = "GetMovie")]        
         public async Task<IActionResult> GetMovie([FromQuery] int movieId) =>
             Ok(await _movieRepo.GetByIdAsync(movieId));
