@@ -39,7 +39,8 @@ namespace ConsoleClient
         {
             servicesCollection.AddLogging(cfg => cfg.AddDebug().AddConsole());
 
-            servicesCollection.AddScoped<IIntegrationService, CRUDService>();
+            //servicesCollection.AddScoped<IIntegrationService, CRUDService>();
+            servicesCollection.AddScoped<IIntegrationService, StreamingService>();
         }
     }
 }
