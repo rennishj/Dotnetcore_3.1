@@ -17,7 +17,7 @@ namespace ConsoleClient.Extensions
             using (var streamReader = new StreamReader(stream))
             {
                 using (var jsonTextReader = new JsonTextReader(streamReader))
-                {
+                {                    
                     return new JsonSerializer().Deserialize<T>(jsonTextReader);                    
                 }
             }
