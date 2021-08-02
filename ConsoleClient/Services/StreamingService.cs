@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.IO;
+﻿using ConsoleClient.Extensions;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -36,14 +35,25 @@ namespace ConsoleClient.Services
             using (var stream = await response.Content.ReadAsStreamAsync())
             {
 
-                using (var streamReader = new StreamReader(stream))
-                {
-                    using (var jsonTextReader = new JsonTextReader(streamReader))
-                    {
-                        var poster = new JsonSerializer().Deserialize<Entity.Poster>(jsonTextReader);
-                    }
-                }
+                var poster = stream.ReadAndDeserializeFromJson<Entity.Poster>();
             }
         }
+
+        private async Task GetPosterWithStreamAndCompletionMode()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/movies/posters/1");
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode(); //throws exception if something bad happens
+
+            //dispose the streams onec done with them
+            using (var stream = await response.Content.ReadAsStreamAsync())
+            {
+                var poster = stream.ReadAndDeserializeFromJson<Entity.Poster>();
+            }
+        }
+
+        
     }
 }
