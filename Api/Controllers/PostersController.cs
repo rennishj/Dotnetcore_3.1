@@ -49,8 +49,9 @@ namespace Api.Controllers
 
             if (movieEntity == null)
                 throw new Exception($"Movie with Id:{movieId} si not found");
+            if(poster.Bytes == null)
+                GenerateRandomPosterData(poster, movieEntity);
 
-            GenerateRandomPosterData(poster, movieEntity);
             var posterEntity = _mapper.Map<Entity.Poster>(poster);
             posterEntity.MovieId = movieId;
 

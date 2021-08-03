@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Text;
 
 namespace ConsoleClient.Extensions
 {
@@ -21,6 +22,26 @@ namespace ConsoleClient.Extensions
                     return new JsonSerializer().Deserialize<T>(jsonTextReader);                    
                 }
             }
+        }
+
+        public static void  SerializeToJsonAndWrite<T>(this Stream stream, T objectToWrite) where T : class
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            if (!stream.CanWrite)
+                throw new NotSupportedException("Can't write to a stream that is not writable");
+            
+            using (var streamWriter = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+            {
+                using (var jsonTextWriter = new JsonTextWriter(streamWriter))
+                {
+                    var jsonSerializer = new JsonSerializer();
+                    jsonSerializer.Serialize(jsonTextWriter, objectToWrite);
+                    jsonTextWriter.Flush();
+                }
+            }
+            
         }
     }
 }
