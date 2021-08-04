@@ -42,7 +42,9 @@ namespace ConsoleClient
             //servicesCollection.AddScoped<IIntegrationService, CRUDService>();
             // servicesCollection.AddScoped<IIntegrationService, StreamingService>();
 
-            servicesCollection.AddScoped<IIntegrationService, CancellationService>();
+            //servicesCollection.AddScoped<IIntegrationService, CancellationService>();
+
+            servicesCollection.AddScoped<IIntegrationService, HttpClientFactoryInstanceManagementService>();
         }
     }
 }
