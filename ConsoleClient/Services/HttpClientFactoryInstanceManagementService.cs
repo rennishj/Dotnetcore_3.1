@@ -25,8 +25,10 @@ namespace ConsoleClient.Services
             //await TestDisposeHttpClient(_cancellationTokenSource.Token);
             // await TestUsingHttpClientFactory(_cancellationTokenSource.Token);
 
-            await GetMoviesWithNamedHttpClientFactory(_cancellationTokenSource.Token);
-            await GetMoviesWithTypedHttpClientFactory(_cancellationTokenSource.Token);
+            //await GetMoviesWithNamedHttpClientFactory(_cancellationTokenSource.Token);
+            //await GetMoviesWithTypedHttpClientFactory(_cancellationTokenSource.Token);
+
+            await GetMoviesByMoviesClient(_cancellationTokenSource.Token);
         }
 
         private async Task TestDisposeHttpClient(CancellationToken cancellationToken)
@@ -117,18 +119,23 @@ namespace ConsoleClient.Services
             }
         }
 
-        private async Task GetMoviesWithTypedHttpClientFactory(CancellationToken cancellationToken)
-        {            
-            var request = new HttpRequestMessage(HttpMethod.Get, "api/movies/getallmovies");
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-            using (var response = await _moviesClient.Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
-            {
-                var stream = await response.Content.ReadAsStreamAsync();
-                response.EnsureSuccessStatusCode();
-                var movies = stream.ReadAndDeserializeFromJson<List<Entity.Movie>>();
-
-            }
+        private async Task GetMoviesByMoviesClient(CancellationToken cancellationToken)
+        {
+            var movies = await _moviesClient.GetMovies(cancellationToken);
         }
+
+        //private async Task GetMoviesWithTypedHttpClientFactory(CancellationToken cancellationToken)
+        //{            
+        //    var request = new HttpRequestMessage(HttpMethod.Get, "api/movies/getallmovies");
+        //    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        //    request.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+        //    using (var response = await _moviesClient.Client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+        //    {
+        //        var stream = await response.Content.ReadAsStreamAsync();
+        //        response.EnsureSuccessStatusCode();
+        //        var movies = stream.ReadAndDeserializeFromJson<List<Entity.Movie>>();
+
+        //    }
+        //}
     }
 }
