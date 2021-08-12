@@ -2,7 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace ConsoleClient
@@ -39,12 +42,55 @@ namespace ConsoleClient
         {
             servicesCollection.AddLogging(cfg => cfg.AddDebug().AddConsole());
 
+            //Named HttpClient            
+            servicesCollection.AddHttpClient("RennishClient", client =>
+            {                
+                client.BaseAddress = new Uri("https://localhost:44300");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    AutomaticDecompression = System.Net.DecompressionMethods.GZip
+                };
+            });
+
+            /*
+            //Typed Http client            
+            servicesCollection.AddHttpClient<MoviesClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44301");
+                client.Timeout = new TimeSpan(0, 0, 30);
+                client.DefaultRequestHeaders.Clear();
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    AutomaticDecompression = System.Net.DecompressionMethods.GZip
+                };
+            });
+            */
+
+            // Moving the default HttpClient configuration to the typed class
+            // We want to leave the ConfigurePrimaryHttpMessageHandler here to take advantage of the pooled HttpMessageHandler that the 
+            // HttpClientFactory is using
+            servicesCollection.AddHttpClient<MoviesClient>()
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler
+                {
+                    AutomaticDecompression = System.Net.DecompressionMethods.GZip
+                };
+            });
+
+            servicesCollection.AddScoped<IIntegrationService, HttpClientFactoryInstanceManagementService>();
             //servicesCollection.AddScoped<IIntegrationService, CRUDService>();
             // servicesCollection.AddScoped<IIntegrationService, StreamingService>();
 
             //servicesCollection.AddScoped<IIntegrationService, CancellationService>();
-
-            servicesCollection.AddScoped<IIntegrationService, HttpClientFactoryInstanceManagementService>();
         }
     }
 }

@@ -26,7 +26,8 @@ namespace ConsoleClient.Services
         {
             //_cancellationTokenSource.CancelAfter(1000);
             //await GetPosterAndCancel(_cancellationTokenSource.Token);
-            await GetPosterAndHandleTimeout();
+            // await GetPosterAndHandleTimeout();
+            await Task.CompletedTask;
         }
 
         private async Task GetPosterAndCancel(CancellationToken cancellationToken)
